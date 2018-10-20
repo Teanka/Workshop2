@@ -48,7 +48,7 @@ public class UserGroup {
         return null;
     }
 
-    static public UserGroup[] loadAllUsers(Connection connection) throws SQLException {
+    static public UserGroup[] loadAllUserGroups(Connection connection) throws SQLException {
         ArrayList<UserGroup> userGroups = new ArrayList<UserGroup>();
         String sql = "SELECT * FROM user_group";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

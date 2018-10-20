@@ -21,7 +21,7 @@ public class User {
     public User(String userName, String email, String password, UserGroup userGroup) {
         this.userName = userName;
         this.email = email;
-        this.setPassword(password);
+        setPassword(password);
         this.userGroup = userGroup;
     }
 
@@ -100,29 +100,40 @@ public class User {
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
-            User loadedUser = new User();
-            loadedUser.id = resultSet.getInt("id");
-            loadedUser.userName = resultSet.getString("user_name");
-            loadedUser.password = resultSet.getString("password");
-            loadedUser.email = resultSet.getString("email");
-            loadedUser.userGroup = new UserGroup();
-            return loadedUser;
+            return getUser(resultSet, connection);
         }
         return null;
     }
 
-    static public User[] loadAllUsers(Connection conn) throws SQLException {
+    static public User loadUserByEmail(Connection connection, String email) throws SQLException {
+        String sql = "SELECT * FROM users where email=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, email);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            return getUser(resultSet, connection);
+        }
+        return null;
+    }
+
+    private static User getUser(ResultSet resultSet, Connection connection) throws SQLException {
+        User loadedUser = new User();
+        loadedUser.id = resultSet.getInt("id");
+        loadedUser.userName = resultSet.getString("user_name");
+        loadedUser.password = resultSet.getString("password");
+        loadedUser.email = resultSet.getString("email");
+        int userGroupId = resultSet.getInt("user_group_id");
+        loadedUser.userGroup = UserGroup.loadUserGroupById(connection,userGroupId);
+        return loadedUser;
+    }
+
+    static public User[] loadAllUsers(Connection connection) throws SQLException {
         ArrayList<User> users = new ArrayList<User>();
         String sql = "SELECT * FROM users";
-        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
-            User loadedUser = new User();
-            loadedUser.id = resultSet.getInt("id");
-            loadedUser.userName = resultSet.getString("user_name");
-            loadedUser.password = resultSet.getString("password");
-            loadedUser.email = resultSet.getString("email");
-            loadedUser.userGroup = new UserGroup();
+            User loadedUser = getUser(resultSet, connection);
             users.add(loadedUser);
         }
         User[] uArray = new User[users.size()];
