@@ -31,6 +31,12 @@ public class UserGroup {
             if (rs.next()) {
                 this.id = rs.getInt(1);
             }
+        } else {
+            String sql = "UPDATE user_group SET name=? where id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, this.name);
+            preparedStatement.setInt(2, this.id);
+            preparedStatement.executeUpdate();
         }
     }
 
@@ -58,8 +64,19 @@ public class UserGroup {
             loadedUserGroup.id = resultSet.getInt("id");
             loadedUserGroup.name = resultSet.getString("name");
             userGroups.add(loadedUserGroup);}
-        UserGroup[] uArray = new UserGroup[userGroups.size()]; uArray = userGroups.toArray(uArray);
+        UserGroup[] uArray = new UserGroup[userGroups.size()];
+        uArray = userGroups.toArray(uArray);
         return uArray;
+    }
+
+    public void delete(Connection connection) throws SQLException {
+        if (this.id != 0) {
+            String sql = "DELETE FROM user_group WHERE id=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, this.id);
+            preparedStatement.executeUpdate();
+            this.id = 0;
+        }
     }
 
     @Override

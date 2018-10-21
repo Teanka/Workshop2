@@ -62,9 +62,9 @@ public class User {
     }
 
 
-    public void saveToDB(Connection connection, int userGroupId) throws SQLException {
-        UserGroup userGroup = UserGroup.loadUserGroupById(connection, userGroupId);
-        if (userGroup != null) {
+    public void saveToDB(Connection connection) throws SQLException {
+//        UserGroup userGroup = UserGroup.loadUserGroupById(connection, userGroupId);
+//        if (userGroup != null) {
             if (this.id == 0) {
                 String sql = "INSERT INTO users(user_name, email, password, user_group_id) VALUES (?, ?, ?,?)";
                 String[] generatedColumns = {"ID"};
@@ -72,7 +72,7 @@ public class User {
                 preparedStatement.setString(1, this.userName);
                 preparedStatement.setString(2, this.email);
                 preparedStatement.setString(3, this.password);
-                preparedStatement.setInt(4, userGroup.getId());
+                preparedStatement.setInt(4, this.userGroup.getId());
                 preparedStatement.executeUpdate();
                 ResultSet rs = preparedStatement.getGeneratedKeys();
                 if (rs.next()) {
@@ -84,13 +84,13 @@ public class User {
                 preparedStatement.setString(1, this.userName);
                 preparedStatement.setString(2, this.email);
                 preparedStatement.setString(3, this.password);
-                preparedStatement.setInt(4, userGroup.getId());
+                preparedStatement.setInt(4, this.userGroup.getId());
                 preparedStatement.setInt(5, this.id);
                 preparedStatement.executeUpdate();
             }
-        } else {
-            System.out.println("Wrong User Group id, new user not saved to database. Please try again.");
-        }
+//        } else {
+//            System.out.println("Wrong User Group id, new user not saved to database. Please try again.");
+//        }
     }
 
 
