@@ -49,7 +49,7 @@ public class User {
         return password;
     }
 
-    private void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
@@ -141,6 +141,22 @@ public class User {
         return uArray;
     }
 
+    public static User[] loadAllUsersByGroupId(Connection connection, int userGroupId) throws SQLException{
+        ArrayList<User> users = new ArrayList<User>();
+        String sql = "SELECT * FROM users WHERE user_group_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1,userGroupId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            User loadedUser = getUser(resultSet, connection);
+            users.add(loadedUser);
+        }
+        User[] uArray = new User[users.size()];
+        uArray = users.toArray(uArray);
+        return uArray;
+
+    }
+
     public void delete(Connection connection) throws SQLException {
         if (this.id != 0) {
             String sql = "DELETE FROM users WHERE id=?";
@@ -158,7 +174,7 @@ public class User {
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
-                ",\n password='" + password + '\'' +
+//                ",\n password='" + password + '\'' + // są haszowane więc nie ma sensu ich wyświetlać
                 ",\n userGroup=" + userGroup.toString() +
                 '}';
     }

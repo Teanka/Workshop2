@@ -20,6 +20,14 @@ public class UserGroup {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void saveToDB(Connection connection) throws SQLException {
         if (this.id == 0) {
             String sql = "INSERT INTO user_group(name) VALUES (?)";
